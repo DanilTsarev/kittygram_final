@@ -12,22 +12,28 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
   backend:
-    image: drsif/kittygram_backend
+    image: drsif/kittygram_backend:latest
     env_file: .env
     volumes:
       - static_volume:/backend_static
       - media_volume:/app/media/
+    depends_on:
+      - db
   frontend:
-    image: drsif/kittygram_frontend 
+    image: drsif/kittygram_frontend:latest
     env_file: .env
     command: cp -r /app/build/. /frontend_static/
     volumes:
       - static_volume:/frontend_static
+    depends_on:
+      - backend
   gateway:
-    image: drsif/kittygram_gateway
+    image: drsif/kittygram_gateway:latest
     env_file: .env
     ports:
       - 9000:80
     volumes:
       - static_volume:/staticfiles/
       - media_volume:/app/media/
+    depends_on:
+      - frontend
